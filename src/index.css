@@ -57,6 +57,28 @@
   --text-section--letter-spacing: -0.02em;
 
   --ease-out-soft: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-node-pulse: node-pulse 6s ease-in-out infinite;
+  --animate-drift: drift 22s ease-in-out infinite alternate;
+
+  @keyframes node-pulse {
+    0%,
+    100% {
+      opacity: 0.2;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes drift {
+    from {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    to {
+      transform: translate3d(3%, -4%, 0) scale(1.08);
+    }
+  }
 }
 
 /* ---------------------------------------------------------------------------

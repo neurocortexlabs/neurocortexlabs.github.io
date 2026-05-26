@@ -1,6 +1,6 @@
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { site } from '@/content/site'
+import { Hero } from '@/components/sections/Hero'
 
 export default function App() {
   return (
@@ -15,10 +15,7 @@ export default function App() {
       <Header />
 
       <main id="main" className="flex-1 pt-20">
-        <section className="shell py-32">
-          <p className="eyebrow">Nonprofit research</p>
-          <h1 className="text-hero mt-6 max-w-4xl">{site.tagline}</h1>
-        </section>
+        <Hero />
       </main>
 
       <Footer />
