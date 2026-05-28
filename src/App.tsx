@@ -1,6 +1,7 @@
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Hero } from '@/components/sections/Hero'
+import { Mission } from '@/components/sections/Mission'
 
 export default function App() {
   return (
@@ -16,6 +17,7 @@ export default function App() {
 
       <main id="main" className="flex-1 pt-20">
         <Hero />
+        <Mission />
       </main>
 
       <Footer />
