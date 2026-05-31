@@ -3,6 +3,7 @@ import { Footer } from '@/components/layout/Footer'
 import { Hero } from '@/components/sections/Hero'
 import { Mission } from '@/components/sections/Mission'
 import { HowItWorks } from '@/components/sections/HowItWorks'
+import { FocusAreas } from '@/components/sections/FocusAreas'
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
         <Hero />
         <Mission />
         <HowItWorks />
+        <FocusAreas />
       </main>
 
       <Footer />
