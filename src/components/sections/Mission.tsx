@@ -1,4 +1,5 @@
 import { SectionHeading } from '@/components/ui/SectionHeading'
+import { Reveal } from '@/components/ui/Reveal'
 
 const OUTPUTS = [
   'Skill-to-impact maps for common professional backgrounds',
@@ -11,19 +12,21 @@ export function Mission() {
   return (
     <section id="mission" className="hairline scroll-mt-24 border-t py-24 sm:py-32">
       <div className="shell">
-        <SectionHeading
-          eyebrow="Mission"
-          title={
-            <>
-              Good intentions are common.
-              <br />
-              Good information is <span className="text-ink-400 italic">not</span>.
-            </>
-          }
-        />
+        <Reveal>
+          <SectionHeading
+            eyebrow="Mission"
+            title={
+              <>
+                Good intentions are common.
+                <br />
+                Good information is <span className="text-ink-400 italic">not</span>.
+              </>
+            }
+          />
+        </Reveal>
 
         <div className="mt-14 grid gap-12 lg:grid-cols-[1.15fr_1fr] lg:gap-20">
-          <div className="text-ink-300 space-y-6 text-lg leading-relaxed">
+          <Reveal className="text-ink-300 space-y-6 text-lg leading-relaxed">
             <p>
               Ask someone who wants to do meaningful work where they should start, and the honest
               answer is usually a shrug. The sectors that need help most are the worst at explaining
@@ -39,9 +42,9 @@ export function Mission() {
               So that is what Neurocortex Labs does. We study how ordinary skills map onto work that
               helps people, and we publish everything we find, free, with the methods attached.
             </p>
-          </div>
+          </Reveal>
 
-          <div className="hairline bg-ink-900/40 rounded-3xl border p-8">
+          <Reveal delay={120} className="hairline bg-ink-900/40 rounded-3xl border p-8">
             <h3 className="font-sans text-ink-500 text-xs font-medium tracking-[0.18em] uppercase">
               What we publish
             </h3>
@@ -60,7 +63,7 @@ export function Mission() {
               We are not a job board and we do not take placement fees. Nothing we publish is
               influenced by who is hiring.
             </p>
-          </div>
+          </Reveal>
         </div>
       </div>
     </section>
