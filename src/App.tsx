@@ -4,6 +4,7 @@ import { Hero } from '@/components/sections/Hero'
 import { Mission } from '@/components/sections/Mission'
 import { HowItWorks } from '@/components/sections/HowItWorks'
 import { FocusAreas } from '@/components/sections/FocusAreas'
+import { CortexPreview } from '@/components/sections/CortexPreview'
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
         <Mission />
         <HowItWorks />
         <FocusAreas />
+        <CortexPreview />
       </main>
 
       <Footer />
