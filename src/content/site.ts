@@ -22,6 +22,7 @@ export const footerLinks = [
       { label: 'Focus areas', href: '#focus-areas' },
       { label: 'How it works', href: '#how-it-works' },
       { label: 'Cortex assistant', href: '#cortex' },
+      { label: 'Get updates', href: '#signup' },
     ],
   },
   {

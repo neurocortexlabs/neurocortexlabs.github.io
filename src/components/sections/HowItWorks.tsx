@@ -19,7 +19,7 @@ export function HowItWorks() {
           {/* The thread connecting the steps — desktop only, purely decorative. */}
           <div
             aria-hidden="true"
-            className="via-signal-400/40 absolute top-7 right-8 left-8 hidden h-px bg-gradient-to-r from-transparent to-transparent lg:block"
+            className="via-signal-400/40 absolute top-7 right-8 left-8 hidden h-px bg-linear-to-r from-transparent to-transparent lg:block"
           />
 
           {steps.map((step, index) => (

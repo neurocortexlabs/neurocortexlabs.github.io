@@ -48,7 +48,7 @@ export function FocusAreas() {
         <p className="text-ink-500 mt-10 text-sm">
           Researching a field we do not cover yet?{' '}
           <a
-            href="#cortex"
+            href="#signup"
             className="text-signal-400 hover:text-signal-300 underline-offset-4 transition-colors hover:underline"
           >
             Tell us what you are looking for.

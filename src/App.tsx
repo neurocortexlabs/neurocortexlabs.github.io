@@ -5,6 +5,7 @@ import { Mission } from '@/components/sections/Mission'
 import { HowItWorks } from '@/components/sections/HowItWorks'
 import { FocusAreas } from '@/components/sections/FocusAreas'
 import { CortexPreview } from '@/components/sections/CortexPreview'
+import { Signup } from '@/components/sections/Signup'
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
         <HowItWorks />
         <FocusAreas />
         <CortexPreview />
+        <Signup />
       </main>
 
       <Footer />

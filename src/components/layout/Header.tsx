@@ -45,8 +45,8 @@ export function Header() {
         </nav>
 
         <div className="hidden md:block">
-          <ButtonLink href="#cortex" size="sm">
-            Start your search
+          <ButtonLink href="#signup" size="sm">
+            Get early access
           </ButtonLink>
         </div>
 
@@ -78,8 +78,8 @@ export function Header() {
               {link.label}
             </a>
           ))}
-          <ButtonLink href="#cortex" className="mt-3" onClick={() => setMenuOpen(false)}>
-            Start your search
+          <ButtonLink href="#signup" className="mt-3" onClick={() => setMenuOpen(false)}>
+            Get early access
           </ButtonLink>
         </nav>
       </div>

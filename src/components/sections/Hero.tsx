@@ -14,7 +14,7 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
         <div className="bg-signal-500/12 animate-drift absolute -top-40 -left-32 h-[36rem] w-[36rem] rounded-full blur-[120px]" />
         <div className="bg-synapse-500/12 animate-drift absolute -top-24 -right-24 h-[30rem] w-[30rem] rounded-full blur-[120px] [animation-delay:-8s]" />
-        <div className="from-ink-950 via-ink-950/40 to-ink-950 absolute inset-0 bg-gradient-to-b" />
+        <div className="from-ink-950 via-ink-950/40 to-ink-950 absolute inset-0 bg-linear-to-b" />
       </div>
 
       <NeuralField className="-z-10 opacity-70" />
@@ -24,7 +24,7 @@ export function Hero() {
 
         <h1 className="text-hero mt-7 max-w-5xl">
           Research where your skills{' '}
-          <span className="from-signal-300 via-signal-400 to-synapse-400 bg-gradient-to-r bg-clip-text text-transparent italic">
+          <span className="from-signal-300 via-signal-400 to-synapse-400 bg-linear-to-r bg-clip-text text-transparent italic">
             do the most good
           </span>
           .
@@ -37,7 +37,7 @@ export function Hero() {
         </p>
 
         <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-          <ButtonLink href="#cortex">Start your search</ButtonLink>
+          <ButtonLink href="#signup">Get early access</ButtonLink>
           <ButtonLink href="#how-it-works" variant="outline">
             How the research works
           </ButtonLink>
