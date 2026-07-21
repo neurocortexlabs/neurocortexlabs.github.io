@@ -14,6 +14,36 @@ export function Header() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Escape closes the menu, and the page behind it should not scroll while the
+  // panel covers it.
+  useEffect(() => {
+    if (!menuOpen) return
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false)
+    }
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', onKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [menuOpen])
+
+  // Resizing past the breakpoint hides the toggle; leaving the panel "open"
+  // behind it strands focus and re-locks scroll on the way back down.
+  useEffect(() => {
+    const desktop = window.matchMedia('(min-width: 48rem)')
+    const onChange = (event: MediaQueryListEvent) => {
+      if (event.matches) setMenuOpen(false)
+    }
+    desktop.addEventListener('change', onChange)
+    return () => desktop.removeEventListener('change', onChange)
+  }, [])
+
   return (
     <header
       className={`fixed inset-x-0 top-0 z-50 transition-colors duration-300 ${
@@ -65,7 +95,7 @@ export function Header() {
       <div
         id="mobile-nav"
         hidden={!menuOpen}
-        className="hairline bg-ink-950/95 border-t backdrop-blur-xl md:hidden"
+        className="hairline bg-ink-950/95 max-h-[calc(100dvh-5rem)] overflow-y-auto border-t backdrop-blur-xl md:hidden"
       >
         <nav aria-label="Primary" className="shell flex flex-col gap-1 py-6">
           {navLinks.map((link) => (
