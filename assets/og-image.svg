@@ -1,0 +1,72 @@
+<!--
+  Source for public/og-image.png. Regenerate after editing:
+    npm run og
+  Fonts are deliberately limited to widely-installed families so rasterization
+  does not depend on the brand webfonts being present on the build machine.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="mark" x1="8" y1="9" x2="24" y2="23" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38dcc2" />
+      <stop offset="1" stop-color="#a78bfa" />
+    </linearGradient>
+    <linearGradient id="accent" x1="80" y1="300" x2="900" y2="420" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#7aeed8" />
+      <stop offset="1" stop-color="#a78bfa" />
+    </linearGradient>
+    <radialGradient id="glowA" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#11c0a5" stop-opacity="0.30" />
+      <stop offset="100%" stop-color="#11c0a5" stop-opacity="0" />
+    </radialGradient>
+    <radialGradient id="glowB" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#8b5cf6" stop-opacity="0.26" />
+      <stop offset="100%" stop-color="#8b5cf6" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="#060915" />
+  <ellipse cx="140" cy="90" rx="520" ry="420" fill="url(#glowA)" />
+  <ellipse cx="1080" cy="120" rx="460" ry="380" fill="url(#glowB)" />
+
+  <!-- Constellation, echoing the hero backdrop -->
+  <g stroke="#38dcc2" stroke-opacity="0.20" stroke-width="1.4">
+    <line x1="840" y1="470" x2="930" y2="392" />
+    <line x1="930" y1="392" x2="1010" y2="452" />
+    <line x1="1010" y1="452" x2="1104" y2="386" />
+    <line x1="930" y1="392" x2="982" y2="300" />
+    <line x1="982" y1="300" x2="1086" y2="286" />
+  </g>
+  <g fill="#38dcc2" fill-opacity="0.55">
+    <circle cx="840" cy="470" r="5" />
+    <circle cx="1010" cy="452" r="5" />
+    <circle cx="1086" cy="286" r="5" />
+  </g>
+  <g fill="#a78bfa" fill-opacity="0.7">
+    <circle cx="930" cy="392" r="7" />
+    <circle cx="982" cy="300" r="6" />
+    <circle cx="1104" cy="386" r="5" />
+  </g>
+
+  <!-- Logo lockup -->
+  <g transform="translate(80, 74) scale(1.5)">
+    <path d="M8 23V9l16 14V9" fill="none" stroke="url(#mark)" stroke-width="2.5"
+          stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="8" cy="9" r="2.75" fill="#38dcc2" />
+    <circle cx="24" cy="23" r="2.75" fill="#a78bfa" />
+  </g>
+  <text x="139" y="112" font-family="Georgia, 'Times New Roman', serif" font-size="34"
+        fill="#f5f7fc">Neurocortex Labs</text>
+
+  <!-- Headline -->
+  <text font-family="Georgia, 'Times New Roman', serif" font-size="82" fill="#f5f7fc">
+    <tspan x="80" y="316">Research where your skills</tspan>
+    <tspan x="80" y="410" fill="url(#accent)" font-style="italic">do the most good.</tspan>
+  </text>
+
+  <!-- Footer rule + meta -->
+  <rect x="80" y="502" width="1040" height="1" fill="#cbd5ea" fill-opacity="0.12" />
+  <text x="80" y="552" font-family="'Segoe UI', Arial, Helvetica, sans-serif" font-size="24"
+        fill="#9dabcb">Nonprofit research &#183; Free and open</text>
+  <text x="1120" y="552" text-anchor="end" font-family="'Segoe UI', Arial, Helvetica, sans-serif"
+        font-size="22" fill="#4c5a7d">aaronhhsi.github.io/neurocortex-labs</text>
+</svg>

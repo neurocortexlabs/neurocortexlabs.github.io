@@ -38,16 +38,21 @@ npm run dev
 | `npm run preview`   | Serve the production build locally            |
 | `npm run lint`      | ESLint over the whole repo                    |
 | `npm run typecheck` | `tsc` in build mode, no emit                  |
+| `npm run og`        | Rasterize the social card to `public/og-image.png` |
 
 ## Project layout
 
 ```
+assets/         Design sources that are built, not served (og-image.svg)
+public/         Served verbatim (favicon, generated og-image.png)
+scripts/        One-off build helpers
 src/
   components/
     layout/     Header, Footer — the frame around every page
     sections/   One file per landing-page section
     ui/         Small reusable pieces (Button, SectionHeading, icons)
   content/      Copy and data, kept out of the components
+  hooks/        useInView — drives the scroll reveals
   index.css     Design tokens + base styles
 ```
 
