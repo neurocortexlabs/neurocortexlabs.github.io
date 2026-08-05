@@ -1,0 +1,44 @@
+name: Suggest a focus area
+description: Tell us about a field that needs people in ways job postings do not show
+labels: ['research', 'focus-area']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is the most useful thing you can send us. We are looking for
+        first-hand knowledge of what a sector is actually short of — not a list
+        of open roles.
+
+  - type: input
+    id: field
+    attributes:
+      label: What field?
+      placeholder: e.g. rural water utilities, refugee resettlement
+    validations:
+      required: true
+
+  - type: textarea
+    id: gap
+    attributes:
+      label: What is it short of?
+      description: >
+        Describe it in terms of skills and capabilities rather than job titles.
+        What keeps going undone, and what kind of person would fix it?
+    validations:
+      required: true
+
+  - type: textarea
+    id: invisible
+    attributes:
+      label: Why is that hard to see from outside?
+      description: What would someone browsing job boards completely miss?
+    validations:
+      required: false
+
+  - type: input
+    id: connection
+    attributes:
+      label: How do you know?
+      description: Work in the field, volunteer there, study it — anything helps us weigh it.
+    validations:
+      required: false
