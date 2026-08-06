@@ -7,7 +7,7 @@ short of what, which roles actually exist, and what the distance is between wher
 someone is now and where they could be useful. The research is published free, with
 methods attached.
 
-**Live site:** https://aaronhhsi.github.io/neurocortex-labs/
+**Live site:** https://neurocortexlabs.github.io/
 
 ---
 
@@ -66,9 +66,10 @@ which builds the site and publishes it to GitHub Pages.
 [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs lint, typecheck and
 build on pull requests so nothing broken reaches `main`.
 
-Pages serves the site from a subpath, so `vite.config.ts` sets
-`base: '/neurocortex-labs/'`. If a custom domain is ever pointed at the site,
-change that back to `'/'`.
+This repo is the organization's **root** Pages site — it is named
+`neurocortexlabs.github.io`, so it publishes to the domain root rather than a
+`/repo-name/` subpath. That is why `vite.config.ts` sets `base: '/'`, and why
+pointing a custom domain here later needs no build changes at all.
 
 ## Roadmap
 

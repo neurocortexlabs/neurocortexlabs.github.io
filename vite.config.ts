@@ -2,13 +2,11 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
-// The site is served from https://aaronhhsi.github.io/neurocortex-labs/, so assets
-// need the repo name as a prefix. If we ever point a custom domain at Pages,
-// change this back to '/'.
-const BASE = '/neurocortex-labs/'
-
 export default defineConfig({
-  base: BASE,
+  // Served from the root of https://neurocortexlabs.github.io/, not a repo
+  // subpath, because the repo is the organization's root Pages site. A custom
+  // domain later would need no change here.
+  base: '/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {

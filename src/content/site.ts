@@ -32,7 +32,7 @@ export const footerLinks = [
       { label: 'Contact', href: `mailto:${site.email}` },
       {
         label: 'Source on GitHub',
-        href: 'https://github.com/aaronhhsi/neurocortex-labs',
+        href: 'https://github.com/neurocortexlabs/neurocortexlabs.github.io',
       },
     ],
   },
