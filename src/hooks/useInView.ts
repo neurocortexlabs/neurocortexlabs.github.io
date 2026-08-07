@@ -4,12 +4,18 @@ type Options = {
   /** How far into the viewport the element must travel before it counts. */
   rootMargin?: string
   threshold?: number
+  /**
+   * Stop observing after the first entry. True for reveals; set false when the
+   * caller needs to know about leaving too, such as pausing a render loop.
+   */
+  once?: boolean
 }
 
 /**
- * Fires once, the first time an element scrolls into view, then stops
- * observing. Reveals are a first-impression effect — re-running them on the
- * way back up is just noise.
+ * Reports whether an element is in the viewport.
+ *
+ * Defaults to firing once and disconnecting: reveals are a first-impression
+ * effect, and re-running them on the way back up is just noise.
  *
  * Falls back to "already visible" where IntersectionObserver is unavailable,
  * so content is never trapped at opacity zero.
@@ -17,6 +23,7 @@ type Options = {
 export function useInView<T extends HTMLElement>({
   rootMargin = '0px 0px -10% 0px',
   threshold = 0.12,
+  once = true,
 }: Options = {}) {
   const ref = useRef<T>(null)
   // Start visible where the observer does not exist, so the fallback costs no
@@ -32,7 +39,9 @@ export function useInView<T extends HTMLElement>({
         for (const entry of entries) {
           if (entry.isIntersecting) {
             setInView(true)
-            observer.disconnect()
+            if (once) observer.disconnect()
+          } else if (!once) {
+            setInView(false)
           }
         }
       },
@@ -41,7 +50,7 @@ export function useInView<T extends HTMLElement>({
 
     observer.observe(element)
     return () => observer.disconnect()
-  }, [rootMargin, threshold])
+  }, [rootMargin, threshold, once])
 
   return { ref, inView }
 }

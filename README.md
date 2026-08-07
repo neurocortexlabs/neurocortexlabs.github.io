@@ -18,6 +18,7 @@ methods attached.
 | Build    | [Vite](https://vite.dev)                  |
 | UI       | React 19 + TypeScript                     |
 | Styling  | Tailwind CSS v4 (CSS-first `@theme` config) |
+| 3D       | three.js via React Three Fiber (lazy-loaded) |
 | Lint     | ESLint flat config + typescript-eslint    |
 | Hosting  | GitHub Pages, deployed by GitHub Actions  |
 
@@ -48,16 +49,49 @@ public/         Served verbatim (favicon, generated og-image.png)
 scripts/        One-off build helpers
 src/
   components/
+    brain/      The interactive 3D hero (see below)
     layout/     Header, Footer — the frame around every page
     sections/   One file per landing-page section
     ui/         Small reusable pieces (Button, SectionHeading, icons)
   content/      Copy and data, kept out of the components
-  hooks/        useInView — drives the scroll reveals
+  hooks/        useInView, usePrefersReducedMotion
   index.css     Design tokens + base styles
 ```
 
 Copy lives in `src/content/` on purpose. Editing the words should not mean
 editing a component.
+
+## The brain
+
+The hero is a procedural 3D brain where each lobe opens a section of the site.
+No model file is involved — the geometry is generated in `brain/geometry.ts`.
+
+The one thing worth knowing before editing it: **the cerebrum is a single
+surface per hemisphere, split into lobes by sorting its faces**, not four
+overlapping ellipsoids. Independent per-lobe spheres were tried first and the
+silhouette is a union of circles no matter how the centres are tuned — it
+always looks like a bag of stones. Deforming one surface and partitioning it
+keeps the organ continuous while still giving each region its own mesh to
+raycast against.
+
+| File               | What it owns                                            |
+| ------------------ | ------------------------------------------------------- |
+| `brainRegions.ts`  | Which lobe maps to which section, and the accent colours |
+| `geometry.ts`      | The fold field, the lateral sulcus, face classification  |
+| `BrainScene.tsx`   | Lighting, materials, hover and click                     |
+| `BrainStage.tsx`   | Loading, fallbacks, caption and legend                   |
+
+Useful dials, all in `BrainScene.tsx`: `REST_GLOW` (how colour-coded the brain
+looks when nobody is touching it), `HOVER_GLOW`, `HOVER_LIFT`, and `TISSUE`.
+Colours mix in **linear** space, so small numbers go further than they look.
+
+three.js is lazy-loaded, so the headline and CTAs paint on the initial bundle
+and the scene arrives after. The stage degrades in three steps: no WebGL falls
+back to the constellation graphic, `prefers-reduced-motion` disables the
+auto-rotation, and the canvas stops rendering entirely once it scrolls out of
+view. The legend beneath the brain is the accessible path to the same
+navigation — real links, keyboard reachable, and the only version that exists
+when WebGL is unavailable.
 
 ## Deployment
 

@@ -1,6 +1,7 @@
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { Hero } from '@/components/sections/Hero'
+import { Overview } from '@/components/sections/Overview'
 import { Mission } from '@/components/sections/Mission'
 import { HowItWorks } from '@/components/sections/HowItWorks'
 import { FocusAreas } from '@/components/sections/FocusAreas'
@@ -21,6 +22,7 @@ export default function App() {
 
       <main id="main" className="flex-1 pt-20">
         <Hero />
+        <Overview />
         <Mission />
         <HowItWorks />
         <FocusAreas />
