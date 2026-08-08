@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react'
+import { useMemo, useRef, type RefObject } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import {
@@ -55,6 +55,18 @@ const HOVER_GLOW = 0.4
  */
 const HOVER_LIFT = 1.012
 
+/**
+ * How far the pointer may travel between press and release and still count as
+ * a click rather than an orbit, in CSS pixels.
+ *
+ * Without this, every drag to turn the brain also navigates: OrbitControls
+ * consumes the movement, but the mesh still sees a press and a release and
+ * fires a click, so the page jumps to a section mid-rotation.
+ */
+const DRAG_SLOP = 6
+
+type PressRef = { x: number; y: number } | null
+
 /** Point overlay density. Far coarser than the shaded mesh — see Lobe. */
 const POINT_DETAIL = 3
 
@@ -94,7 +106,10 @@ export default function BrainScene({
       {/* A neutral key does the shaping. The coloured lights are rim and fill
           only, kept weak on purpose — crank them and every lobe turns into a
           saturated balloon instead of tissue. */}
-      <ambientLight intensity={0.55} color="#93a2c4" />
+      {/* Ambient carries the walls of the longitudinal fissure. Drop it much
+          below this and the midline goes black, which reads as a hole rather
+          than a groove. */}
+      <ambientLight intensity={0.68} color="#93a2c4" />
       <directionalLight position={[2.5, 3.5, 4]} intensity={1.9} color="#eef2ff" />
       <pointLight position={[-3, 0.5, 1.5]} intensity={8} color="#38dcc2" distance={12} />
       <pointLight position={[2.5, -1.5, -2.5]} intensity={8} color="#a78bfa" distance={12} />
@@ -137,6 +152,10 @@ type BrainProps = {
 function Brain({ detail, hovered, onHover, onSelect, reducedMotion }: BrainProps) {
   const group = useRef<Group>(null)
 
+  // Shared across every region on purpose: a drag that starts on one lobe and
+  // releases over another must still be recognised as a drag.
+  const pressRef = useRef<PressRef>(null)
+
   // Both hemispheres are built once and split into lobes here, rather than each
   // lobe building its own sphere — that is what keeps the surface continuous.
   const hemispheres = useMemo(
@@ -172,10 +191,11 @@ function Brain({ detail, hovered, onHover, onSelect, reducedMotion }: BrainProps
                 region={region}
                 geometry={geometry}
                 pointGeometry={pointGeometry}
-                position={cerebrumCenter(sign)}
+                position={cerebrumCenter()}
                 isHovered={hovered === region.id}
                 onHover={onHover}
                 onSelect={onSelect}
+                pressRef={pressRef}
               />
             )
           }),
@@ -193,6 +213,7 @@ function Brain({ detail, hovered, onHover, onSelect, reducedMotion }: BrainProps
               isHovered={hovered === region.id}
               onHover={onHover}
               onSelect={onSelect}
+              pressRef={pressRef}
             />
           )),
         )}
@@ -207,6 +228,7 @@ function Structure({
   isHovered,
   onHover,
   onSelect,
+  pressRef,
 }: {
   region: Extract<BrainRegion, { kind: 'structure' }>
   sign: number
@@ -214,6 +236,7 @@ function Structure({
   isHovered: boolean
   onHover: (id: string | null) => void
   onSelect: (href: string) => void
+  pressRef: RefObject<PressRef>
 }) {
   const geometry = useMemo(
     () => buildStructure(region.shape, detail, sign),
@@ -233,6 +256,7 @@ function Structure({
       isHovered={isHovered}
       onHover={onHover}
       onSelect={onSelect}
+      pressRef={pressRef}
     />
   )
 }
@@ -245,6 +269,7 @@ type PartProps = {
   isHovered: boolean
   onHover: (id: string | null) => void
   onSelect: (href: string) => void
+  pressRef: RefObject<PressRef>
 }
 
 function Part({
@@ -255,6 +280,7 @@ function Part({
   isHovered,
   onHover,
   onSelect,
+  pressRef,
 }: PartProps) {
   const mesh = useRef<Mesh>(null)
   const points = useRef<Points>(null)
@@ -304,9 +330,20 @@ function Part({
         onHover(null)
         document.body.style.cursor = ''
       }}
+      onPointerDown={(event) => {
+        pressRef.current = { x: event.nativeEvent.clientX, y: event.nativeEvent.clientY }
+      }}
       onClick={(event) => {
         event.stopPropagation()
-        if (region.href) onSelect(region.href)
+        const start = pressRef.current
+        pressRef.current = null
+        if (!region.href) return
+        if (start) {
+          const dx = event.nativeEvent.clientX - start.x
+          const dy = event.nativeEvent.clientY - start.y
+          if (Math.hypot(dx, dy) > DRAG_SLOP) return // an orbit, not a click
+        }
+        onSelect(region.href)
       }}
     >
       <meshStandardMaterial

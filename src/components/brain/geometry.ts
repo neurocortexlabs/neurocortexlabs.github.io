@@ -11,10 +11,30 @@ import type { LobeShape } from '@/components/brain/brainRegions'
  * continuous organ whose lobes are colour regions, while still leaving each
  * region its own mesh to raycast against.
  */
+// Note the z centre is 0 and the z radius is the organ's FULL half-width: each
+// hemisphere is a whole ellipsoid spanning the midline, which the medial clamp
+// below then slices in half.
+//
+// Offsetting the hemispheres apart instead — the obvious approach — does not
+// work. An ellipsoid's cross-section shrinks toward its poles, so a fixed
+// offset leaves a gap that widens the further you get from the equator, worst
+// of all at the frontal pole. Head-on, that gap is a strip missing from the
+// middle of the brain. Slicing a centred ellipsoid keeps the flat medial wall
+// running the entire length, so the fissure stays a constant thin slot.
 const CEREBRUM = {
-  center: [0, 0.02, 0.38] as [number, number, number],
-  radius: [1.02, 0.7, 0.36] as [number, number, number],
+  center: [0, 0.02, 0] as [number, number, number],
+  radius: [0.95, 0.7, 0.75] as [number, number, number],
 }
+
+/**
+ * Half-width of the longitudinal fissure — the gap down the midline.
+ *
+ * Every vertex that would cross the midline is clamped onto this plane, which
+ * slices the centred ellipsoid in half and leaves a flat medial wall. The two
+ * walls then face each other across a constant thin slot — what a real brain
+ * has — instead of the widening canyon two offset domes produce.
+ */
+const MEDIAL_GAP = 0.02
 
 /** Cortical regions, in the order faces get sorted into them. */
 export type CortexRegionId = 'frontal' | 'parietal' | 'temporal' | 'occipital'
@@ -90,15 +110,33 @@ export function buildCerebrum(detail: number, sign: number): Map<CortexRegionId,
   const source = new IcosahedronGeometry(1, detail)
   const position = source.attributes.position
   const unit = new Vector3()
-  const displaced = new Vector3()
 
-  // IcosahedronGeometry is non-indexed, so vertices arrive three at a time and
-  // every consecutive triple is one face.
+  const [cx, cy, cz] = CEREBRUM.center
+  const [rx, ry, rz] = CEREBRUM.radius
+
+  // Positions are baked in world space here, not relative to a hemisphere
+  // centre, so the medial clamp below can be expressed against the midline
+  // plane directly. The meshes therefore sit at the origin.
   const points: number[][] = []
   for (let i = 0; i < position.count; i += 1) {
     unit.fromBufferAttribute(position, i).normalize()
-    displace(unit, CEREBRUM.center, CEREBRUM.radius, sign, displaced)
-    points.push([displaced.x, displaced.y, displaced.z])
+
+    const lx = unit.x * rx
+    const ly = unit.y * ry
+    const lz = unit.z * rz * sign
+
+    const scale = 1 + fold(lx + cx, ly + cy, lz + cz * sign)
+
+    const wx = cx + lx * scale
+    const wy = cy + ly * scale
+    // Flatten the medial face against the fissure plane. Without this the
+    // hemisphere domes inward and the two halves gape apart.
+    const wz =
+      sign > 0
+        ? Math.max(cz * sign + lz * scale, MEDIAL_GAP)
+        : Math.min(cz * sign + lz * scale, -MEDIAL_GAP)
+
+    points.push([wx, wy, wz])
   }
   source.dispose()
 
@@ -133,9 +171,12 @@ export function buildCerebrum(detail: number, sign: number): Map<CortexRegionId,
   return result
 }
 
-/** Where a hemisphere's cerebrum mesh should be placed. */
-export function cerebrumCenter(sign: number): [number, number, number] {
-  return [CEREBRUM.center[0], CEREBRUM.center[1], CEREBRUM.center[2] * sign]
+/**
+ * Cerebrum vertices are baked in world space, so its meshes sit at the origin —
+ * which also means a hovered lobe scales outward from the centre of the organ.
+ */
+export function cerebrumCenter(): [number, number, number] {
+  return [0, 0, 0]
 }
 
 /**

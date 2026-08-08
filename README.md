@@ -74,6 +74,12 @@ always looks like a bag of stones. Deforming one surface and partitioning it
 keeps the organ continuous while still giving each region its own mesh to
 raycast against.
 
+The same trap catches the midline. Each hemisphere is a **whole** ellipsoid
+centred on z = 0, sliced in half by clamping every vertex to `MEDIAL_GAP`.
+Offsetting two hemispheres apart instead leaves a gap that widens toward the
+poles — worst at the frontal pole — which head-on looks like a strip missing
+from the middle of the brain.
+
 | File               | What it owns                                            |
 | ------------------ | ------------------------------------------------------- |
 | `brainRegions.ts`  | Which lobe maps to which section, and the accent colours |

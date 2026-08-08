@@ -85,9 +85,11 @@ export const brainRegions: BrainRegion[] = [
     href: null,
     section: null,
     color: '#6d7da4', // ink-400
+    // Tucked under the occipital rather than behind it — pushed much further
+    // back and it bulges past the rear profile and reads as a growth.
     shape: {
-      center: [-0.66, -0.52, 0.26],
-      radius: [0.34, 0.24, 0.24],
+      center: [-0.55, -0.47, 0.25],
+      radius: [0.3, 0.22, 0.23],
       mirrored: true,
     },
   },
@@ -100,8 +102,8 @@ export const brainRegions: BrainRegion[] = [
     section: null,
     color: '#6d7da4', // ink-400
     shape: {
-      center: [-0.2, -0.72, 0],
-      radius: [0.12, 0.3, 0.13],
+      center: [-0.32, -0.68, 0],
+      radius: [0.12, 0.28, 0.13],
       mirrored: false,
     },
   },
