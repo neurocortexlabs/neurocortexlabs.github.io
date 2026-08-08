@@ -80,6 +80,12 @@ Offsetting two hemispheres apart instead leaves a gap that widens toward the
 poles — worst at the frontal pole — which head-on looks like a strip missing
 from the middle of the brain.
 
+And anything mirrored across the midline must have its **triangle winding
+reversed**. Negating z is a reflection, so the mirrored half comes out
+inside-out: backface culling drops its near surface and you see through it to
+the inside of the far wall. It hides well, because the broken half only faces
+the camera once the brain has rotated most of the way around.
+
 | File               | What it owns                                            |
 | ------------------ | ------------------------------------------------------- |
 | `brainRegions.ts`  | Which lobe maps to which section, and the accent colours |

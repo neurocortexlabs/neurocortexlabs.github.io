@@ -82,6 +82,25 @@ function fold(x: number, y: number, z: number): number {
   return gyri - sulcus
 }
 
+/**
+ * Mirroring by negating z is a reflection, and a reflection reverses triangle
+ * winding. Left-hand structures therefore come out inside-out: every face
+ * points inward, backface culling removes the near surface, and you see
+ * straight through to the inside of the far wall.
+ *
+ * It is easy to miss, because the mirrored half only betrays itself once the
+ * camera swings around far enough to look at it directly.
+ */
+function reverseWinding(position: BufferAttribute) {
+  for (let f = 0; f < position.count; f += 3) {
+    const x = position.getX(f + 1)
+    const y = position.getY(f + 1)
+    const z = position.getZ(f + 1)
+    position.setXYZ(f + 1, position.getX(f + 2), position.getY(f + 2), position.getZ(f + 2))
+    position.setXYZ(f + 2, x, y, z)
+  }
+}
+
 function displace(
   unit: Vector3,
   center: [number, number, number],
@@ -158,7 +177,8 @@ export function buildCerebrum(detail: number, sign: number): Map<CortexRegionId,
     const cy = (a[1] + b[1] + c[1]) / 3
 
     const bucket = buckets.get(classify(cx, cy))
-    if (bucket) bucket.push(...a, ...b, ...c)
+    // Emit the mirrored hemisphere's faces reversed, so it is not inside-out.
+    if (bucket) bucket.push(...(sign > 0 ? [...a, ...b, ...c] : [...a, ...c, ...b]))
   }
 
   const result = new Map<CortexRegionId, BufferGeometry>()
@@ -194,6 +214,8 @@ export function buildStructure(shape: LobeShape, detail: number, sign = 1): Buff
     displace(unit, shape.center, shape.radius, sign, displaced)
     position.setXYZ(i, displaced.x, displaced.y, displaced.z)
   }
+
+  if (sign < 0) reverseWinding(position as BufferAttribute)
 
   geometry.computeVertexNormals()
   return geometry
