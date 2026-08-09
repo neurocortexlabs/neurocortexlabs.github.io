@@ -49,12 +49,14 @@ export function BrainStage() {
   const active = brainRegions.find((region) => region.id === hovered) ?? null
 
   return (
-    <div ref={ref} className="flex w-full flex-col items-center">
-      <div className="relative aspect-square w-full max-w-[min(80vw,32rem)] sm:max-w-[min(60vw,36rem)]">
+    // min-h-0 all the way down: without it a flex child refuses to shrink below
+    // its content, and the canvas cannot claim the leftover space.
+    <div ref={ref} className="flex min-h-0 w-full flex-1 flex-col items-center">
+      <div className="relative min-h-0 w-full flex-1">
         {/* Ambient wash behind the organ so it never floats on flat black. */}
         <div
           aria-hidden="true"
-          className="bg-signal-500/12 absolute inset-[12%] rounded-full blur-[80px]"
+          className="bg-signal-500/12 absolute inset-[18%] rounded-full blur-[80px]"
         />
 
         {supportsWebGL ? (
@@ -77,7 +79,7 @@ export function BrainStage() {
           the legend and headline around while it does. */}
       <p
         aria-live="polite"
-        className="text-ink-400 mt-6 flex min-h-12 max-w-md items-center justify-center px-4 text-center text-sm leading-relaxed"
+        className="text-ink-400 mt-2 flex min-h-9 max-w-md shrink-0 items-center justify-center px-4 text-center text-sm leading-relaxed"
       >
         {active ? (
           <span>
@@ -97,7 +99,7 @@ export function BrainStage() {
       {/* The legend is the accessible path to the same navigation: real links,
           keyboard reachable, and the only version that exists without WebGL.
           Hovering a chip lights the matching lobe, so the two stay in sync. */}
-      <ul className="mt-2 flex flex-wrap items-center justify-center gap-2">
+      <ul className="mt-1 flex shrink-0 flex-wrap items-center justify-center gap-2">
         {navigableRegions.map((region) => {
           const isActive = hovered === region.id
           return (

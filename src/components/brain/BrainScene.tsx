@@ -1,5 +1,5 @@
-import { useMemo, useRef, type RefObject } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { useMemo, useRef, type ReactNode, type RefObject } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { OrbitControls } from '@react-three/drei'
 import {
   AdditiveBlending,
@@ -9,6 +9,7 @@ import {
   type Group,
   type Mesh,
   type MeshStandardMaterial,
+  type PerspectiveCamera,
   type Points,
   type PointsMaterial,
 } from 'three'
@@ -69,6 +70,9 @@ type PressRef = { x: number; y: number } | null
 
 /** Point overlay density. Far coarser than the shaded mesh — see Lobe. */
 const POINT_DETAIL = 3
+
+/** Breathing room left around the organ once it has been fitted to the canvas. */
+const FIT_MARGIN = 0.97
 
 export type BrainSceneProps = {
   hovered: string | null
@@ -135,7 +139,9 @@ export default function BrainScene({
         // directly above or below just reads as an unidentifiable lump.
         minPolarAngle={Math.PI * 0.28}
         maxPolarAngle={Math.PI * 0.72}
-        target={[0, -0.05, 0]}
+        // The organ is recentred onto the origin by FitToView, so that is what
+        // the camera should orbit around.
+        target={[0, 0, 0]}
       />
     </Canvas>
   )
@@ -168,6 +174,56 @@ function Brain({ detail, hovered, onHover, onSelect, reducedMotion }: BrainProps
     [detail],
   )
 
+  /**
+   * Separate vertical and horizontal extents, measured rather than hardcoded so
+   * they keep up when the lobe shapes are retuned.
+   *
+   * Not a bounding sphere. The brain is a third longer than it is tall, and the
+   * camera only ever orbits around Y, so its on-screen height never exceeds the
+   * Y extent while its width swings up to the largest radius in the XZ plane.
+   * Fitting one sphere to both would size the whole thing by its longest axis
+   * and leave a band of dead space above and below it.
+   */
+  const bounds = useMemo(() => {
+    let top = -Infinity
+    let bottom = Infinity
+    let horizontal = 0
+
+    for (const { shaded } of hemispheres) {
+      for (const geometry of shaded.values()) {
+        const position = geometry.attributes.position
+        for (let i = 0; i < position.count; i += 1) {
+          const y = position.getY(i)
+          if (y > top) top = y
+          if (y < bottom) bottom = y
+          horizontal = Math.max(horizontal, Math.hypot(position.getX(i), position.getZ(i)))
+        }
+      }
+    }
+
+    for (const region of brainRegions) {
+      if (region.kind !== 'structure') continue
+      const [x, y, z] = region.shape.center
+      const [rx, ry, rz] = region.shape.radius
+      // Folds can push a structure a little past its nominal radius.
+      top = Math.max(top, y + ry * 1.2)
+      bottom = Math.min(bottom, y - ry * 1.2)
+      horizontal = Math.max(horizontal, Math.hypot(Math.abs(x) + rx * 1.2, Math.abs(z) + rz * 1.2))
+    }
+
+    // Measure the half-extent about the organ's own middle, and shift that
+    // middle onto the camera target. The brain hangs well below the origin —
+    // the stem reaches much further down than the crown reaches up — so
+    // measuring |y| from the origin describes a box a tenth taller than the
+    // brain, and every pixel of that phantom height came out of its size.
+    return {
+      centerY: (top + bottom) / 2,
+      // The idle drift tilts the group slightly, which borrows a little height.
+      vertical: ((top - bottom) / 2) * 1.05,
+      horizontal,
+    }
+  }, [hemispheres])
+
   // A slight drift reads as a specimen on a stand rather than a floating ball.
   useFrame((state) => {
     if (!group.current || reducedMotion) return
@@ -177,6 +233,7 @@ function Brain({ detail, hovered, onHover, onSelect, reducedMotion }: BrainProps
   })
 
   return (
+    <FitToView bounds={bounds}>
     <group ref={group} rotation={[0.08, 0, -0.06]}>
       {hemispheres.map(({ sign, shaded, dots }) =>
         brainRegions
@@ -217,6 +274,42 @@ function Brain({ detail, hovered, onHover, onSelect, reducedMotion }: BrainProps
             />
           )),
         )}
+    </group>
+    </FitToView>
+  )
+}
+
+/**
+ * Scales the organ so it just fills the canvas, at whatever size and shape the
+ * browser window leaves for it.
+ *
+ * The extents are worst-case across every rotation the controls allow, not the
+ * current silhouette. Fitting the outline you can see right now would be
+ * bigger, but the brain turns, and anything sized to one angle clips at another.
+ */
+function FitToView({
+  bounds,
+  children,
+}: {
+  bounds: { vertical: number; horizontal: number; centerY: number }
+  children: ReactNode
+}) {
+  const size = useThree((state) => state.size)
+  const camera = useThree((state) => state.camera)
+
+  const scale = useMemo(() => {
+    if (!bounds.vertical || !bounds.horizontal || !size.height) return 1
+    const perspective = camera as PerspectiveCamera
+    // Zoom is disabled, so orbiting never changes this.
+    const distance = perspective.position.length()
+    const halfHeight = distance * Math.tan((perspective.fov * Math.PI) / 360)
+    const halfWidth = halfHeight * (size.width / size.height)
+    return Math.min(halfHeight / bounds.vertical, halfWidth / bounds.horizontal) * FIT_MARGIN
+  }, [camera, size.width, size.height, bounds])
+
+  return (
+    <group scale={scale}>
+      <group position={[0, -bounds.centerY, 0]}>{children}</group>
     </group>
   )
 }

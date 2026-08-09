@@ -94,8 +94,16 @@ the camera once the brain has rotated most of the way around.
 | `BrainStage.tsx`   | Loading, fallbacks, caption and legend                   |
 
 Useful dials, all in `BrainScene.tsx`: `REST_GLOW` (how colour-coded the brain
-looks when nobody is touching it), `HOVER_GLOW`, `HOVER_LIFT`, and `TISSUE`.
-Colours mix in **linear** space, so small numbers go further than they look.
+looks when nobody is touching it), `HOVER_GLOW`, `HOVER_LIFT`, `FIT_MARGIN` and
+`TISSUE`. Colours mix in **linear** space, so small numbers go further than
+they look.
+
+`FitToView` sizes the organ to whatever space the window leaves, measuring
+worst-case extents across every rotation the controls permit — separately for
+width and height, since the brain is a third longer than it is tall and one
+bounding sphere would waste the difference. How much space it gets is set by
+the floor on the hero's brain wrapper in `Hero.tsx`; raise it and the brain
+grows, at the cost of pushing the headline further below the fold.
 
 three.js is lazy-loaded, so the headline and CTAs paint on the initial bundle
 and the scene arrives after. The stage degrades in three steps: no WebGL falls
