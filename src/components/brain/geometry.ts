@@ -27,19 +27,21 @@ const CEREBRUM = {
 }
 
 /**
- * Half-width of the longitudinal fissure — the gap down the midline.
+ * How far each hemisphere reaches *past* the midline.
  *
- * Every vertex that would cross the midline is clamped onto this plane, which
- * slices the centred ellipsoid in half and leaves a flat medial wall. The two
- * walls then face each other across a constant slot, instead of the widening
- * canyon two offset domes produce.
+ * Every vertex that would cross the midline is clamped to this plane, slicing
+ * the centred ellipsoid in half and leaving a flat medial wall — which is what
+ * stops two offset domes gaping apart toward the poles.
  *
- * Kept to a hairline. The walls face inward, so they are backface-culled and
- * the slot reads as a dark line rather than a groove with visible sides —
- * which at any real width looks like a seam between two objects instead of one
- * organ. Not zero only so the two hemispheres are not exactly coplanar.
+ * The clamp used to sit on the fissure side of the midline, leaving a slot
+ * between the two walls. Any slot at all is visible: the walls face inward and
+ * are backface-culled, so it renders as a hard dark line, and even 0.008 units
+ * came out as a two-pixel crack down the middle of the organ. Clamping past
+ * the midline instead makes the halves interpenetrate slightly. The overlap is
+ * buried inside solid geometry where nothing can see it, and there is no seam
+ * left to antialias.
  */
-const MEDIAL_GAP = 0.004
+const MEDIAL_OVERLAP = 0.012
 
 /** Cortical regions, in the order faces get sorted into them. */
 export type CortexRegionId = 'prefrontal' | 'frontal' | 'parietal' | 'temporal' | 'occipital'
@@ -156,12 +158,12 @@ export function buildCerebrum(detail: number, sign: number): Map<CortexRegionId,
 
     const wx = cx + lx * scale
     const wy = cy + ly * scale
-    // Flatten the medial face against the fissure plane. Without this the
+    // Flatten the medial face just past the midline. Without this the
     // hemisphere domes inward and the two halves gape apart.
     const wz =
       sign > 0
-        ? Math.max(cz * sign + lz * scale, MEDIAL_GAP)
-        : Math.min(cz * sign + lz * scale, -MEDIAL_GAP)
+        ? Math.max(cz * sign + lz * scale, -MEDIAL_OVERLAP)
+        : Math.min(cz * sign + lz * scale, MEDIAL_OVERLAP)
 
     points.push([wx, wy, wz])
   }

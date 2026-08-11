@@ -70,8 +70,8 @@ export function Header({ onHome }: { onHome: () => void }) {
         </nav>
 
         <div className="hidden lg:block">
-          <ButtonLink href="#about" size="sm">
-            Get early access
+          <ButtonLink href="#start" size="sm">
+            Try it now
           </ButtonLink>
         </div>
 
@@ -105,8 +105,8 @@ export function Header({ onHome }: { onHome: () => void }) {
               {link.label}
             </a>
           ))}
-          <ButtonLink href="#about" className="mt-3" onClick={() => setMenuOpen(false)}>
-            Get early access
+          <ButtonLink href="#start" className="mt-3" onClick={() => setMenuOpen(false)}>
+            Try it now
           </ButtonLink>
         </nav>
       </div>

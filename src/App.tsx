@@ -6,11 +6,14 @@ import { Mission } from '@/components/sections/Mission'
 import { HowItWorks } from '@/components/sections/HowItWorks'
 import { FocusAreas } from '@/components/sections/FocusAreas'
 import { CortexPreview } from '@/components/sections/CortexPreview'
+import { Start } from '@/components/sections/Start'
+import { ButtonLink } from '@/components/ui/Button'
 import { useHashView, type ViewId } from '@/hooks/useHashView'
 
 type SectionId = Exclude<ViewId, 'home'>
 
 const VIEWS: Record<SectionId, { title: string; render: () => ReactNode }> = {
+  start: { title: 'Try it now', render: () => <Start /> },
   about: { title: 'About us', render: () => <About /> },
   mission: { title: 'Mission', render: () => <Mission /> },
   'how-it-works': { title: 'How it works', render: () => <HowItWorks /> },
@@ -72,7 +75,7 @@ function SectionView({ view, onBack }: { view: SectionId; onBack: () => void }) 
       aria-label={VIEWS[view].title}
       className="h-full overflow-y-auto outline-none"
     >
-      <div className="shell pt-8">
+      <div className="shell flex flex-wrap items-center justify-between gap-4 pt-8">
         <button
           type="button"
           onClick={onBack}
@@ -93,6 +96,13 @@ function SectionView({ view, onBack }: { view: SectionId; onBack: () => void }) 
           </svg>
           Back to the brain
         </button>
+
+        {/* Every view offers the way in — except the way in itself. */}
+        {view !== 'start' ? (
+          <ButtonLink href="#start" size="sm">
+            Try it now
+          </ButtonLink>
+        ) : null}
       </div>
 
       <div className="pt-10 pb-24">{VIEWS[view].render()}</div>

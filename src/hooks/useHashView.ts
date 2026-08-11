@@ -9,7 +9,15 @@ import { useCallback, useEffect, useState } from 'react'
  * button works, views are linkable, and a reload lands you where you were —
  * none of which a bare useState would give.
  */
-export const VIEW_IDS = ['home', 'about', 'mission', 'how-it-works', 'focus-areas', 'cortex'] as const
+export const VIEW_IDS = [
+  'home',
+  'start',
+  'about',
+  'mission',
+  'how-it-works',
+  'focus-areas',
+  'cortex',
+] as const
 
 export type ViewId = (typeof VIEW_IDS)[number]
 

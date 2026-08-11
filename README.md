@@ -80,11 +80,31 @@ set the hash.
 | Temporal lobe       | Focus areas   |
 | Occipital lobe      | Cortex        |
 
+`#start` is the one view with no region of its own — it is the intake form, and
+it is reached from the "Try it now" button in the header and on every view.
+
 Navigation that lives inside a canvas is unreachable by keyboard, invisible to
 a screen reader, and absent entirely without WebGL. So the same links exist as
 real anchors in two places: the header, and a nav inside `BrainStage` that is
 `sr-only` when the scene is working and promoted to a visible fallback when it
 is not. **If you add a region, add it to `navLinks` too.**
+
+## Configuration
+
+Both forms post to endpoints supplied at build time, and both degrade honestly
+when the endpoint is absent — which is the current state.
+
+| Variable                | Powers                | Unset behaviour                                     |
+| ----------------------- | --------------------- | --------------------------------------------------- |
+| `VITE_SIGNUP_ENDPOINT`  | Mailing list, on About| Falls back to a `mailto:` link                       |
+| `VITE_INTAKE_ENDPOINT`  | Intake form, `#start` | Form works, submit disabled, says so before the fields |
+
+`VITE_INTAKE_ENDPOINT` must accept `multipart/form-data` — the payload carries a
+résumé file alongside `skills` and `email`.
+
+**Keep the unset behaviour honest.** A résumé is personal data, and a form that
+looks like it filed something when it did not is worse than no form at all. The
+notice sits above the fields rather than below them on purpose.
 
 ## The brain
 

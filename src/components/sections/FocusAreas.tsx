@@ -32,8 +32,8 @@ export function FocusAreas() {
         <Reveal>
           <SectionHeading
             eyebrow="Focus areas"
-            title="Six fields we know well enough to be useful about."
-            lead="These are the sectors our current research covers. Each one is short of people in ways that rarely show up in a job title."
+            title="Where we have looked so far."
+            lead="These are the sectors we have published on, not the limit of what we will look at. Each is short of people in ways that rarely show up in a job title — and so are plenty of fields not on this list yet."
           />
         </Reveal>
 
@@ -45,14 +45,16 @@ export function FocusAreas() {
       </div>
 
       <Reveal className="shell">
-        <p className="text-ink-500 mt-10 text-sm">
-          Researching a field we do not cover yet?{' '}
+        <p className="text-ink-400 mt-10 max-w-2xl text-sm leading-relaxed">
+          The method is not tied to this list. If your field is not here, that usually means nobody
+          has written it up yet rather than that there is nothing to find —{' '}
           <a
-            href="#about"
+            href="#start"
             className="text-signal-400 hover:text-signal-300 underline-offset-4 transition-colors hover:underline"
           >
-            Tell us what you are looking for.
-          </a>
+            tell us what you can do
+          </a>{' '}
+          and we will go looking.
         </p>
       </Reveal>
     </section>
