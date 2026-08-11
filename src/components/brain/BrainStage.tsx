@@ -1,6 +1,14 @@
-import { Suspense, lazy, useCallback, useState } from 'react'
+import {
+  Suspense,
+  lazy,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type PointerEvent,
+} from 'react'
 import { NeuralField } from '@/components/ui/NeuralField'
-import { navigableRegions } from '@/components/brain/brainRegions'
+import { brainRegions, navigableRegions } from '@/components/brain/brainRegions'
 import { useInView } from '@/hooks/useInView'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 
@@ -45,8 +53,53 @@ export function BrainStage() {
     window.location.hash = view
   }, [])
 
+  const labelRef = useRef<HTMLDivElement>(null)
+  const pointerRef = useRef({ x: 0, y: 0 })
+
+  const place = useCallback((x: number, y: number, bounds: DOMRect) => {
+    const label = labelRef.current
+    if (!label) return
+    label.style.transform = `translate3d(${x}px, ${y}px, 0)`
+    // Flip to the cursor's left near the right edge so the card stays on screen.
+    label.dataset.flip = x > bounds.width - 260 ? 'true' : 'false'
+  }, [])
+
+  /**
+   * The label follows the cursor by writing a transform straight to the DOM
+   * rather than going through state. Pointer moves fire on every frame, and
+   * re-rendering a React tree containing a WebGL canvas at that rate is a
+   * needless way to lose frames. Only the label's *contents* come from state,
+   * and those change once per region.
+   */
+  const handlePointerMove = useCallback(
+    (event: PointerEvent<HTMLDivElement>) => {
+      const bounds = event.currentTarget.getBoundingClientRect()
+      const x = event.clientX - bounds.left
+      const y = event.clientY - bounds.top
+      pointerRef.current = { x, y }
+      place(x, y, bounds)
+    },
+    [place],
+  )
+
+  const active = brainRegions.find((region) => region.id === hovered) ?? null
+
+  // The label mounts in response to a hover, which means it did not exist
+  // during the pointer event that would have positioned it — and if the cursor
+  // then holds still, no further event arrives and it sits at the corner. So
+  // place it from the last known pointer position the moment it appears.
+  useLayoutEffect(() => {
+    const stage = ref.current
+    if (!stage || !active) return
+    place(pointerRef.current.x, pointerRef.current.y, stage.getBoundingClientRect())
+  }, [active, place, ref])
+
   return (
-    <div ref={ref} className="relative min-h-0 w-full flex-1">
+    <div
+      ref={ref}
+      onPointerMove={handlePointerMove}
+      className="relative min-h-0 w-full flex-1"
+    >
       {/* Ambient wash behind the organ so it never floats on flat black. */}
       <div
         aria-hidden="true"
@@ -67,6 +120,33 @@ export function BrainStage() {
       ) : (
         <NeuralField className="opacity-60" />
       )}
+
+      {/*
+        Hover label. `group` on the wrapper drives the flip via data-flip, and
+        the whole thing is pointer-events-none so it can never sit between the
+        cursor and the lobe it is describing.
+      */}
+      {active ? (
+        <div
+          ref={labelRef}
+          data-flip="false"
+          aria-hidden="true"
+          className="group pointer-events-none absolute top-0 left-0 z-20 will-change-transform"
+        >
+          <div className="hairline bg-ink-950/90 w-max max-w-[16rem] -translate-y-1/2 translate-x-5 rounded-xl border px-3.5 py-2.5 shadow-xl shadow-black/50 backdrop-blur-md group-data-[flip=true]:-translate-x-[calc(100%+1.25rem)]">
+            <p
+              className="font-mono text-[0.625rem] tracking-[0.18em] uppercase"
+              style={{ color: active.color }}
+            >
+              {active.name}
+            </p>
+            {active.section ? (
+              <p className="text-ink-50 mt-1 text-sm font-medium">{active.section}</p>
+            ) : null}
+            <p className="text-ink-400 mt-1 text-xs leading-relaxed">{active.role}</p>
+          </div>
+        </div>
+      ) : null}
 
       {/*
         The same navigation as the brain, in plain links.

@@ -46,7 +46,7 @@ export const brainRegions: BrainRegion[] = [
     kind: 'cortex',
     id: 'prefrontal',
     name: 'Prefrontal cortex',
-    role: 'Identity and self-knowledge — who we are and why',
+    role: 'Weighs what matters before it acts. So do we.',
     view: 'about',
     section: 'About us',
     color: '#c4b5fd', // synapse-300
@@ -55,7 +55,7 @@ export const brainRegions: BrainRegion[] = [
     kind: 'cortex',
     id: 'frontal',
     name: 'Frontal lobe',
-    role: 'Intent and initiative — turning judgment into action',
+    role: 'Turns a judgment into a decision, and a decision into work.',
     view: 'mission',
     section: 'Mission',
     color: '#38dcc2', // signal-400
@@ -64,7 +64,7 @@ export const brainRegions: BrainRegion[] = [
     kind: 'cortex',
     id: 'parietal',
     name: 'Parietal lobe',
-    role: 'Integrating separate signals into one map',
+    role: 'Takes scattered signals and makes one map out of them.',
     view: 'how-it-works',
     section: 'How it works',
     color: '#a78bfa', // synapse-400
@@ -73,7 +73,7 @@ export const brainRegions: BrainRegion[] = [
     kind: 'cortex',
     id: 'temporal',
     name: 'Temporal lobe',
-    role: 'Memory and meaning — everything you already know',
+    role: 'Holds everything you already know how to do.',
     view: 'focus-areas',
     section: 'Focus areas',
     color: '#f8b95c', // ember-400
@@ -82,7 +82,7 @@ export const brainRegions: BrainRegion[] = [
     kind: 'cortex',
     id: 'occipital',
     name: 'Occipital lobe',
-    role: 'Sight — seeing what was there the whole time',
+    role: 'Sees the opening you have walked past a hundred times.',
     view: 'cortex',
     section: 'Cortex',
     color: '#b6f7ea', // signal-200
@@ -91,7 +91,7 @@ export const brainRegions: BrainRegion[] = [
     kind: 'structure',
     id: 'cerebellum',
     name: 'Cerebellum',
-    role: 'Practised skill, running without supervision',
+    role: 'Practised skill, running without supervision.',
     view: null,
     section: null,
     color: '#6d7da4', // ink-400
@@ -107,7 +107,7 @@ export const brainRegions: BrainRegion[] = [
     kind: 'structure',
     id: 'stem',
     name: 'Brain stem',
-    role: 'Everything that keeps going without being asked',
+    role: 'Everything that keeps going without being asked.',
     view: null,
     section: null,
     color: '#6d7da4', // ink-400

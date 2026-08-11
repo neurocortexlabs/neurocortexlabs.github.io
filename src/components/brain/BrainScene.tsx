@@ -97,6 +97,11 @@ export default function BrainScene({
   // high-frequency terms alias into noise instead of reading as gyri.
   const detail = quality === 'high' ? 5 : 4
 
+  // Hovering holds the organ still. Reading a label on a target that is
+  // drifting out from under the cursor is its own small annoyance, and the
+  // pause is what makes the thing feel like it is responding to you.
+  const paused = hovered !== null
+
   return (
     <Canvas
       dpr={[1, 2]}
@@ -125,12 +130,13 @@ export default function BrainScene({
         onHover={onHover}
         onSelect={onSelect}
         reducedMotion={reducedMotion}
+        paused={paused}
       />
 
       <OrbitControls
         enableZoom={false}
         enablePan={false}
-        autoRotate={!reducedMotion}
+        autoRotate={!reducedMotion && !paused}
         autoRotateSpeed={0.55}
         enableDamping
         dampingFactor={0.08}
@@ -153,9 +159,10 @@ type BrainProps = {
   onHover: (id: string | null) => void
   onSelect: (view: string) => void
   reducedMotion: boolean
+  paused: boolean
 }
 
-function Brain({ detail, hovered, onHover, onSelect, reducedMotion }: BrainProps) {
+function Brain({ detail, hovered, onHover, onSelect, reducedMotion, paused }: BrainProps) {
   const group = useRef<Group>(null)
 
   // Shared across every region on purpose: a drag that starts on one lobe and
@@ -225,8 +232,9 @@ function Brain({ detail, hovered, onHover, onSelect, reducedMotion }: BrainProps
   }, [hemispheres])
 
   // A slight drift reads as a specimen on a stand rather than a floating ball.
+  // It stops with the rotation, so a hovered lobe is genuinely still.
   useFrame((state) => {
-    if (!group.current || reducedMotion) return
+    if (!group.current || reducedMotion || paused) return
     const t = state.clock.elapsedTime
     group.current.rotation.z = Math.sin(t * 0.25) * 0.03
     group.current.position.y = Math.sin(t * 0.4) * 0.02

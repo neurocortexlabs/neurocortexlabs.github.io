@@ -31,10 +31,15 @@ const CEREBRUM = {
  *
  * Every vertex that would cross the midline is clamped onto this plane, which
  * slices the centred ellipsoid in half and leaves a flat medial wall. The two
- * walls then face each other across a constant thin slot — what a real brain
- * has — instead of the widening canyon two offset domes produce.
+ * walls then face each other across a constant slot, instead of the widening
+ * canyon two offset domes produce.
+ *
+ * Kept to a hairline. The walls face inward, so they are backface-culled and
+ * the slot reads as a dark line rather than a groove with visible sides —
+ * which at any real width looks like a seam between two objects instead of one
+ * organ. Not zero only so the two hemispheres are not exactly coplanar.
  */
-const MEDIAL_GAP = 0.02
+const MEDIAL_GAP = 0.004
 
 /** Cortical regions, in the order faces get sorted into them. */
 export type CortexRegionId = 'prefrontal' | 'frontal' | 'parietal' | 'temporal' | 'occipital'
