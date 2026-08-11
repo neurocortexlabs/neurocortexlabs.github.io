@@ -5,7 +5,7 @@ import { steps, type Step } from '@/content/steps'
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="hairline scroll-mt-24 border-t py-24 sm:py-32">
+    <section id="how-it-works">
       <div className="shell">
         <Reveal>
           <SectionHeading

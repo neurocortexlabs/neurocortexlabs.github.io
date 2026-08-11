@@ -1,9 +1,10 @@
 import type { CortexRegionId } from '@/components/brain/geometry'
+import type { ViewId } from '@/hooks/useHashView'
 
 /**
- * The brain doubles as the site's navigation, so every interactive lobe has to
- * earn its mapping twice: it must be where that lobe actually sits, and what
- * that lobe actually does has to rhyme with the section it opens.
+ * The brain *is* the site's navigation, so every interactive region has to earn
+ * its mapping twice: it must be where that region actually sits, and what that
+ * region actually does has to rhyme with the view it opens.
  *
  * Axes: +x anterior (front), +y superior (up), +z right. One unit ≈ half the
  * length of the organ; the camera framing in BrainScene assumes this.
@@ -24,11 +25,11 @@ export type LobeShape = {
 type RegionBase = {
   /** Anatomical name, shown on hover. */
   name: string
-  /** What this region does, and why it maps to the section. */
+  /** What this region does, and why it maps to the view. */
   role: string
-  /** Section anchor, or null for structures that are not navigation. */
-  href: string | null
-  /** Nav label of the target section. */
+  /** View this region opens, or null for structures that are not navigation. */
+  view: ViewId | null
+  /** Short label for the view. */
   section: string | null
   /** Hex from the Tailwind palette in index.css — kept in sync by hand. */
   color: string
@@ -43,10 +44,19 @@ export type BrainRegion = RegionBase &
 export const brainRegions: BrainRegion[] = [
   {
     kind: 'cortex',
+    id: 'prefrontal',
+    name: 'Prefrontal cortex',
+    role: 'Identity and self-knowledge — who we are and why',
+    view: 'about',
+    section: 'About us',
+    color: '#c4b5fd', // synapse-300
+  },
+  {
+    kind: 'cortex',
     id: 'frontal',
     name: 'Frontal lobe',
-    role: 'Judgment and planning — deciding what is worth doing',
-    href: '#mission',
+    role: 'Intent and initiative — turning judgment into action',
+    view: 'mission',
     section: 'Mission',
     color: '#38dcc2', // signal-400
   },
@@ -55,7 +65,7 @@ export const brainRegions: BrainRegion[] = [
     id: 'parietal',
     name: 'Parietal lobe',
     role: 'Integrating separate signals into one map',
-    href: '#how-it-works',
+    view: 'how-it-works',
     section: 'How it works',
     color: '#a78bfa', // synapse-400
   },
@@ -64,7 +74,7 @@ export const brainRegions: BrainRegion[] = [
     id: 'temporal',
     name: 'Temporal lobe',
     role: 'Memory and meaning — everything you already know',
-    href: '#focus-areas',
+    view: 'focus-areas',
     section: 'Focus areas',
     color: '#f8b95c', // ember-400
   },
@@ -73,7 +83,7 @@ export const brainRegions: BrainRegion[] = [
     id: 'occipital',
     name: 'Occipital lobe',
     role: 'Sight — seeing what was there the whole time',
-    href: '#cortex',
+    view: 'cortex',
     section: 'Cortex',
     color: '#b6f7ea', // signal-200
   },
@@ -82,7 +92,7 @@ export const brainRegions: BrainRegion[] = [
     id: 'cerebellum',
     name: 'Cerebellum',
     role: 'Practised skill, running without supervision',
-    href: null,
+    view: null,
     section: null,
     color: '#6d7da4', // ink-400
     // Tucked under the occipital rather than behind it — pushed much further
@@ -98,7 +108,7 @@ export const brainRegions: BrainRegion[] = [
     id: 'stem',
     name: 'Brain stem',
     role: 'Everything that keeps going without being asked',
-    href: null,
+    view: null,
     section: null,
     color: '#6d7da4', // ink-400
     shape: {
@@ -109,8 +119,8 @@ export const brainRegions: BrainRegion[] = [
   },
 ]
 
-/** Only the regions that navigate — used for the legend and the a11y fallback. */
+/** Only the regions that navigate — used for the fallback and screen-reader nav. */
 export const navigableRegions = brainRegions.filter(
-  (region): region is BrainRegion & { href: string; section: string } =>
-    region.href !== null && region.section !== null,
+  (region): region is BrainRegion & { view: ViewId; section: string } =>
+    region.view !== null && region.section !== null,
 )

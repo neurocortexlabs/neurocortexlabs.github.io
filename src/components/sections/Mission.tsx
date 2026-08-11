@@ -10,7 +10,7 @@ const OUTPUTS = [
 
 export function Mission() {
   return (
-    <section id="mission" className="hairline scroll-mt-24 border-t py-24 sm:py-32">
+    <section id="mission">
       <div className="shell">
         <Reveal>
           <SectionHeading

@@ -9,8 +9,8 @@ type Status = 'idle' | 'submitting' | 'success' | 'error'
 
 export function Signup() {
   return (
-    <section id="signup" className="hairline scroll-mt-24 border-t py-24 sm:py-32">
-      <div className="shell">
+    <section id="signup">
+      <div>
         <Reveal>
           <div className="relative isolate overflow-hidden rounded-3xl">
             {/* Gradient hairline: a bright border drawn as a masked background. */}

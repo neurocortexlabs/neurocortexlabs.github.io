@@ -1,12 +1,12 @@
 import { Suspense, lazy, useCallback, useState } from 'react'
 import { NeuralField } from '@/components/ui/NeuralField'
-import { brainRegions, navigableRegions } from '@/components/brain/brainRegions'
+import { navigableRegions } from '@/components/brain/brainRegions'
 import { useInView } from '@/hooks/useInView'
 import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion'
 
 // three.js is by far the heaviest thing on the site. Keeping it behind a lazy
-// boundary means the headline, copy and CTAs paint on the initial bundle and
-// the scene arrives afterwards, rather than holding up first paint.
+// boundary means the headline paints on the initial bundle and the scene
+// arrives afterwards, rather than holding up first paint.
 const BrainScene = lazy(() => import('@/components/brain/BrainScene'))
 
 function detectWebGL(): boolean {
@@ -22,7 +22,7 @@ function detectWebGL(): boolean {
 
 function detectQuality(): 'low' | 'high' {
   const cores = navigator.hardwareConcurrency ?? 4
-  return window.innerWidth < 768 || cores <= 4 ? 'low' : 'high'
+  return window.innerWidth < 768 || cores <= 2 ? 'low' : 'high'
 }
 
 export function BrainStage() {
@@ -31,106 +31,83 @@ export function BrainStage() {
   const [quality] = useState(detectQuality)
   const reducedMotion = usePrefersReducedMotion()
 
-  // Not `once` — the render loop should stop once the hero is scrolled past.
+  // Not `once` — the render loop should stop if the canvas ever leaves view.
   const { ref, inView } = useInView<HTMLDivElement>({
     once: false,
     rootMargin: '200px',
     threshold: 0,
   })
 
-  const handleSelect = useCallback((href: string) => {
-    const target = document.querySelector(href)
-    if (!target) return
-    // Mirror what an anchor would do, so the position stays shareable.
-    window.history.pushState(null, '', href)
-    target.scrollIntoView({ block: 'start' })
+  // Setting the hash is all it takes: the router in useHashView listens for it.
+  // Going through the URL rather than a callback keeps this component unaware
+  // of the routing, and means the brain and the header nav do the same thing.
+  const handleSelect = useCallback((view: string) => {
+    window.location.hash = view
   }, [])
 
-  const active = brainRegions.find((region) => region.id === hovered) ?? null
-
   return (
-    // min-h-0 all the way down: without it a flex child refuses to shrink below
-    // its content, and the canvas cannot claim the leftover space.
-    <div ref={ref} className="flex min-h-0 w-full flex-1 flex-col items-center">
-      <div className="relative min-h-0 w-full flex-1">
-        {/* Ambient wash behind the organ so it never floats on flat black. */}
-        <div
-          aria-hidden="true"
-          className="bg-signal-500/12 absolute inset-[18%] rounded-full blur-[80px]"
-        />
+    <div ref={ref} className="relative min-h-0 w-full flex-1">
+      {/* Ambient wash behind the organ so it never floats on flat black. */}
+      <div
+        aria-hidden="true"
+        className="bg-signal-500/12 absolute inset-[18%] rounded-full blur-[80px]"
+      />
 
-        {supportsWebGL ? (
-          <Suspense fallback={<NeuralField className="opacity-40" />}>
-            <BrainScene
-              hovered={hovered}
-              onHover={setHovered}
-              onSelect={handleSelect}
-              reducedMotion={reducedMotion}
-              quality={quality}
-              active={inView}
-            />
-          </Suspense>
-        ) : (
-          <NeuralField className="opacity-60" />
-        )}
-      </div>
+      {supportsWebGL ? (
+        <Suspense fallback={<NeuralField className="opacity-40" />}>
+          <BrainScene
+            hovered={hovered}
+            onHover={setHovered}
+            onSelect={handleSelect}
+            reducedMotion={reducedMotion}
+            quality={quality}
+            active={inView}
+          />
+        </Suspense>
+      ) : (
+        <NeuralField className="opacity-60" />
+      )}
 
-      {/* Fixed height: the caption changes on every hover and must not shove
-          the legend and headline around while it does. */}
-      <p
-        aria-live="polite"
-        className="text-ink-400 mt-2 flex min-h-9 max-w-md shrink-0 items-center justify-center px-4 text-center text-sm leading-relaxed"
+      {/*
+        The same navigation as the brain, in plain links.
+
+        Once the primary navigation lives inside a canvas it is unreachable by
+        keyboard and invisible to a screen reader, and it does not exist at all
+        without WebGL. So this is always in the DOM — visually hidden when the
+        scene is doing its job, and promoted to a visible fallback when it is
+        not. The header carries the same links for pointer users.
+      */}
+      <nav
+        aria-label="Brain regions"
+        className={
+          supportsWebGL
+            ? 'sr-only'
+            : 'absolute inset-0 flex flex-col items-center justify-center gap-3 px-6'
+        }
       >
-        {active ? (
-          <span>
-            <span className="text-ink-100">{active.name}</span>
-            <span className="text-ink-600"> — </span>
-            {active.role}
-          </span>
-        ) : (
-          <span className="text-ink-500">
-            {supportsWebGL
-              ? 'Every lobe opens a part of the site. Drag to turn it.'
-              : 'Every lobe opens a part of the site.'}
-          </span>
-        )}
-      </p>
-
-      {/* The legend is the accessible path to the same navigation: real links,
-          keyboard reachable, and the only version that exists without WebGL.
-          Hovering a chip lights the matching lobe, so the two stay in sync. */}
-      <ul className="mt-1 flex shrink-0 flex-wrap items-center justify-center gap-2">
-        {navigableRegions.map((region) => {
-          const isActive = hovered === region.id
-          return (
+        {!supportsWebGL ? (
+          <p className="text-ink-500 max-w-xs text-center text-sm">
+            Your browser is not showing 3D graphics, so here are the same regions as links.
+          </p>
+        ) : null}
+        <ul
+          className={
+            supportsWebGL ? undefined : 'flex flex-wrap items-center justify-center gap-2'
+          }
+        >
+          {navigableRegions.map((region) => (
             <li key={region.id}>
               <a
-                href={region.href}
-                onMouseEnter={() => setHovered(region.id)}
-                onMouseLeave={() => setHovered(null)}
-                onFocus={() => setHovered(region.id)}
-                onBlur={() => setHovered(null)}
-                className={`hairline ease-out-soft flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm transition duration-200 ${
-                  isActive
-                    ? 'border-ink-100/25 bg-ink-100/5 text-ink-50'
-                    : 'text-ink-400 hover:text-ink-100'
-                }`}
+                href={`#${region.view}`}
+                className="hairline text-ink-300 hover:text-ink-50 rounded-full border px-3.5 py-2 text-sm transition-colors"
               >
-                <span
-                  aria-hidden="true"
-                  className="h-2 w-2 rounded-full transition-transform duration-200"
-                  style={{
-                    backgroundColor: region.color,
-                    boxShadow: isActive ? `0 0 12px ${region.color}` : 'none',
-                    transform: isActive ? 'scale(1.35)' : 'scale(1)',
-                  }}
-                />
                 {region.section}
+                <span className="sr-only"> — {region.name}</span>
               </a>
             </li>
-          )
-        })}
-      </ul>
+          ))}
+        </ul>
+      </nav>
     </div>
   )
 }

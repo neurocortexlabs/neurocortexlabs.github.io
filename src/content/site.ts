@@ -8,32 +8,14 @@ export const site = {
   foundedYear: 2026,
 } as const
 
+/**
+ * These mirror the navigable brain regions in brainRegions.ts, and are the
+ * pointer-and-keyboard route to the same views the lobes open.
+ */
 export const navLinks = [
+  { label: 'About us', href: '#about' },
   { label: 'Mission', href: '#mission' },
   { label: 'How it works', href: '#how-it-works' },
   { label: 'Focus areas', href: '#focus-areas' },
   { label: 'Cortex', href: '#cortex' },
-] as const
-
-export const footerLinks = [
-  {
-    heading: 'Research',
-    links: [
-      { label: 'Focus areas', href: '#focus-areas' },
-      { label: 'How it works', href: '#how-it-works' },
-      { label: 'Cortex assistant', href: '#cortex' },
-      { label: 'Get updates', href: '#signup' },
-    ],
-  },
-  {
-    heading: 'Organization',
-    links: [
-      { label: 'Mission', href: '#mission' },
-      { label: 'Contact', href: `mailto:${site.email}` },
-      {
-        label: 'Source on GitHub',
-        href: 'https://github.com/neurocortexlabs/neurocortexlabs.github.io',
-      },
-    ],
-  },
 ] as const

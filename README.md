@@ -61,10 +61,35 @@ src/
 Copy lives in `src/content/` on purpose. Editing the words should not mean
 editing a component.
 
+## Navigation
+
+The site does not scroll. It is a set of views, and **the brain is the
+navigation**: the home view is the organ, clicking a region swaps that region's
+view in place of it, and "Back to the brain" or `Esc` returns.
+
+Routing rides on the URL hash (`useHashView`), so the back button works, views
+are linkable, and a reload lands where you were. Everything shares one route
+table — the brain regions, the header nav, and the hidden fallback nav all just
+set the hash.
+
+| Region              | View          |
+| ------------------- | ------------- |
+| Prefrontal cortex   | About us      |
+| Frontal lobe        | Mission       |
+| Parietal lobe       | How it works  |
+| Temporal lobe       | Focus areas   |
+| Occipital lobe      | Cortex        |
+
+Navigation that lives inside a canvas is unreachable by keyboard, invisible to
+a screen reader, and absent entirely without WebGL. So the same links exist as
+real anchors in two places: the header, and a nav inside `BrainStage` that is
+`sr-only` when the scene is working and promoted to a visible fallback when it
+is not. **If you add a region, add it to `navLinks` too.**
+
 ## The brain
 
-The hero is a procedural 3D brain where each lobe opens a section of the site.
-No model file is involved — the geometry is generated in `brain/geometry.ts`.
+The home view is a procedural 3D brain. No model file is involved — the
+geometry is generated in `brain/geometry.ts`.
 
 The one thing worth knowing before editing it: **the cerebrum is a single
 surface per hemisphere, split into lobes by sorting its faces**, not four
@@ -86,12 +111,20 @@ inside-out: backface culling drops its near surface and you see through it to
 the inside of the far wall. It hides well, because the broken half only faces
 the camera once the brain has rotated most of the way around.
 
+Two more traps worth knowing before editing the geometry. Mirroring a
+hemisphere negates z, which is a reflection, and a reflection **reverses
+triangle winding** — mirrored faces must be emitted in reverse order or that
+half renders inside-out and you see straight through it. And each hemisphere is
+a whole ellipsoid centred on the midline, sliced flat by a clamp; offsetting two
+ellipsoids apart instead leaves a gap that widens toward the poles and looks
+like a strip missing from the middle of the brain.
+
 | File               | What it owns                                            |
 | ------------------ | ------------------------------------------------------- |
-| `brainRegions.ts`  | Which lobe maps to which section, and the accent colours |
+| `brainRegions.ts`  | Which region opens which view, and the accent colours    |
 | `geometry.ts`      | The fold field, the lateral sulcus, face classification  |
-| `BrainScene.tsx`   | Lighting, materials, hover and click                     |
-| `BrainStage.tsx`   | Loading, fallbacks, caption and legend                   |
+| `BrainScene.tsx`   | Lighting, materials, fit-to-viewport, hover and click    |
+| `BrainStage.tsx`   | Loading, fallbacks, and the accessible nav               |
 
 Useful dials, all in `BrainScene.tsx`: `REST_GLOW` (how colour-coded the brain
 looks when nobody is touching it), `HOVER_GLOW`, `HOVER_LIFT`, `FIT_MARGIN` and

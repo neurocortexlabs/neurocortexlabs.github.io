@@ -37,18 +37,21 @@ const CEREBRUM = {
 const MEDIAL_GAP = 0.02
 
 /** Cortical regions, in the order faces get sorted into them. */
-export type CortexRegionId = 'frontal' | 'parietal' | 'temporal' | 'occipital'
+export type CortexRegionId = 'prefrontal' | 'frontal' | 'parietal' | 'temporal' | 'occipital'
 
 /**
  * Which lobe a point on the cerebral surface belongs to.
  *
  * Boundaries are planes in the sagittal profile, which is roughly how the real
  * landmarks run: the temporal lobe sits below a forward-tilting line (the
- * lateral sulcus), and the remaining arc splits front to back.
+ * lateral sulcus), and the remaining arc splits front to back. The prefrontal
+ * cortex is the anterior tip of the frontal lobe, so it is carved off the front
+ * rather than being a lobe of its own.
  */
 function classify(x: number, y: number): CortexRegionId {
   if (x > -0.45 && y < -0.14 - 0.1 * x) return 'temporal'
-  if (x > 0.26) return 'frontal'
+  if (x > 0.58) return 'prefrontal'
+  if (x > 0.18) return 'frontal'
   if (x < -0.46) return 'occipital'
   return 'parietal'
 }
@@ -160,6 +163,7 @@ export function buildCerebrum(detail: number, sign: number): Map<CortexRegionId,
   source.dispose()
 
   const buckets = new Map<CortexRegionId, number[]>([
+    ['prefrontal', []],
     ['frontal', []],
     ['parietal', []],
     ['temporal', []],

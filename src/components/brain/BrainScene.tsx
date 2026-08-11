@@ -77,11 +77,11 @@ const FIT_MARGIN = 0.97
 export type BrainSceneProps = {
   hovered: string | null
   onHover: (id: string | null) => void
-  onSelect: (href: string) => void
+  onSelect: (view: string) => void
   reducedMotion: boolean
   /** Mobile and low-power devices get a coarser mesh. */
   quality: 'low' | 'high'
-  /** Stop rendering entirely once the hero is scrolled past. */
+  /** Stop rendering when the canvas is not on screen. */
   active: boolean
 }
 
@@ -151,7 +151,7 @@ type BrainProps = {
   detail: number
   hovered: string | null
   onHover: (id: string | null) => void
-  onSelect: (href: string) => void
+  onSelect: (view: string) => void
   reducedMotion: boolean
 }
 
@@ -328,7 +328,7 @@ function Structure({
   detail: number
   isHovered: boolean
   onHover: (id: string | null) => void
-  onSelect: (href: string) => void
+  onSelect: (view: string) => void
   pressRef: RefObject<PressRef>
 }) {
   const geometry = useMemo(
@@ -361,7 +361,7 @@ type PartProps = {
   position: [number, number, number]
   isHovered: boolean
   onHover: (id: string | null) => void
-  onSelect: (href: string) => void
+  onSelect: (view: string) => void
   pressRef: RefObject<PressRef>
 }
 
@@ -407,7 +407,7 @@ function Part({
     }
   })
 
-  const interactive = region.href !== null
+  const interactive = region.view !== null
 
   return (
     <mesh
@@ -430,13 +430,13 @@ function Part({
         event.stopPropagation()
         const start = pressRef.current
         pressRef.current = null
-        if (!region.href) return
+        if (!region.view) return
         if (start) {
           const dx = event.nativeEvent.clientX - start.x
           const dy = event.nativeEvent.clientY - start.y
           if (Math.hypot(dx, dy) > DRAG_SLOP) return // an orbit, not a click
         }
-        onSelect(region.href)
+        onSelect(region.view)
       }}
     >
       <meshStandardMaterial

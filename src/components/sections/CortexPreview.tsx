@@ -32,7 +32,7 @@ const CAPABILITIES = [
 
 export function CortexPreview() {
   return (
-    <section id="cortex" className="hairline scroll-mt-24 border-t py-24 sm:py-32">
+    <section id="cortex">
       <div className="shell">
         <div className="grid items-start gap-14 lg:grid-cols-2 lg:gap-20">
           <Reveal>

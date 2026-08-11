@@ -27,7 +27,7 @@ const ACCENTS: Record<FocusAreaAccent, { icon: string; glow: string; border: str
 
 export function FocusAreas() {
   return (
-    <section id="focus-areas" className="hairline scroll-mt-24 border-t py-24 sm:py-32">
+    <section id="focus-areas">
       <div className="shell">
         <Reveal>
           <SectionHeading
@@ -48,7 +48,7 @@ export function FocusAreas() {
         <p className="text-ink-500 mt-10 text-sm">
           Researching a field we do not cover yet?{' '}
           <a
-            href="#signup"
+            href="#about"
             className="text-signal-400 hover:text-signal-300 underline-offset-4 transition-colors hover:underline"
           >
             Tell us what you are looking for.
